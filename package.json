@@ -1,0 +1,49 @@
+{
+    "name": "translationtoolbox",
+    "displayName": "TranslationToolbox",
+    "description": "",
+    "version": "0.1.1",
+    "publisher": "WLY",
+    "icon": "images/icon.png",
+    "engines": {
+        "vscode": "^1.5.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:translationtoolbox.translate"
+    ],
+    "main": "./extension",
+    "contributes": {
+		"keybindings": [
+			{
+				"command": "translationtoolbox.translate",
+				"key": "ctrl+alt+t",
+				"mac": "cmd+alt+t",
+				"when": "editorTextFocus"
+			}
+		],
+		"commands": [
+			{
+				"command": "translationtoolbox.translate",
+				"title": "translate"
+			}
+		]
+	},
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "mocha": "^2.3.3",
+        "eslint": "^3.6.0",
+        "@types/node": "^6.0.40",
+        "@types/mocha": "^2.2.32"
+    },
+    "dependencies": {
+		"request": "^2.67.0"
+	}
+}
