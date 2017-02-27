@@ -12,6 +12,8 @@
 * 使用快捷键 `ctrl+alt+t or cmd+alt+t` 启用TranslationToolbox扩展
 * 选中想要翻译的文本，并将**鼠标移至其上**，即可显示翻译结果
 
+![](./images/Animation.gif)
+
 ## Release Notes
 
 ### 0.0.1
@@ -19,7 +21,7 @@
 发布第一版
 
 > 整合了**百度，Google，Bing，及有道**翻译的相关API
-> 支持**选中即可翻译**
+> 支持**划词翻译**
 
 ## Source
 
