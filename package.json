@@ -1,21 +1,21 @@
 {
-    "name": "translationtoolbox",
-    "displayName": "TranslationToolbox",
-    "description": "",
-    "version": "0.1.1",
-    "publisher": "WLY",
-    "icon": "images/icon.png",
-    "engines": {
-        "vscode": "^1.5.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:translationtoolbox.translate"
-    ],
-    "main": "./extension",
-    "contributes": {
+	"name": "translationtoolbox",
+	"displayName": "TranslationToolbox",
+	"description": "划词翻译;整合了百度，Google，Bing，及有道翻译的相关API",
+	"version": "0.3.0",
+	"publisher": "WLY",
+	"icon": "images/icon.png",
+	"engines": {
+		"vscode": "^1.5.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:translationtoolbox.translate"
+	],
+	"main": "./extension",
+	"contributes": {
 		"keybindings": [
 			{
 				"command": "translationtoolbox.translate",
@@ -31,19 +31,24 @@
 			}
 		]
 	},
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "mocha": "^2.3.3",
-        "eslint": "^3.6.0",
-        "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
-    },
-    "dependencies": {
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"typescript": "^2.0.3",
+		"vscode": "^1.0.0",
+		"mocha": "^2.3.3",
+		"eslint": "^3.6.0",
+		"@types/node": "^6.0.40",
+		"@types/mocha": "^2.2.32"
+	},
+	"dependencies": {
 		"request": "^2.67.0"
+	},
+	"__metadata": {
+		"id": "e1dc558b-88e8-4dc7-9ff3-f995909485f4",
+		"publisherId": "3dcd93a7-6859-431a-967b-e175b201363f",
+		"publisherDisplayName": "WLY"
 	}
 }

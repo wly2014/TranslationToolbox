@@ -16,14 +16,22 @@
 
 ## Release Notes
 
-### 0.0.1
-
-发布第一版
+### 0.1.2
 
 > 整合了**百度，Google，Bing，及有道**翻译的相关API
-> 支持**划词翻译**
+> 支持**选中即可翻译**
+
+### 0.2.0
+
+> 更新修复了有道翻译的相关API
+
+### 0.3.0
+
+> 更新修复了**百度翻译**的相关API
 
 ## Source
+
+`软件出现翻译的API错误时，请通过Github提交issue通知我。`
 
 [GitHub](https://github.com/wly2014/TranslationToolbox)
 

@@ -2,6 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 var vscode = require('vscode');
 var request = require('request');
+var crypto = require('crypto');
+var baidu = require('./baidu');
 
 function hashCode(text) {
     var n = 0, t, i, r;
@@ -79,61 +81,61 @@ function hover2translate() {
             if (selection != "" && selection != " " && selection != preSelection) {
                 preSelection = selection;
                 let texts = selection.split(/\s+/);
-                if (texts.length < 4) {
+                // if (texts.length < 4) {
                     // 词或短语时                    
-                    return translatebyYouDao(selection).then(function (result) {
-                            preResult = result;
-                            return new vscode.Hover({language:"markdown",value:result});
-                        }).catch(function(err){
-                            console.log(err);
-                        });
-                } else {
-                    // 句子时
-                    var encodeText="";
-                    texts.forEach(function(v){
-                        encodeText += encodeURI(v)+' '
-                    });
-                    // console.log("encodeText",encodeText);
-                    
-                    // return translatebyBaiDu(encodeText).then(function (result) {
-                    //     preResult = result;
-                    //     return new vscode.Hover({language:"markdown",value:"[BaiDu]: \n"+result+"\n----------\nHello"});
-                    // }).catch(function(err){
-                    //     console.log(err);
-                    // });
-
-                    var translations = {};
-                    return translatebyBing(encodeText).then(function (result) {
-                        // preResult = result;
-                        console.log(result);
-                        translations["Bing"]=result;
-                        return translatebyBaiDu(encodeText);
-                        // return result;
-                        // return new vscode.Hover({language:"markdown",value:"[BaiDu]: \n"+result+"\n----------\nHello"});
-                    }).then(function (result) {
-                        console.log(result);
-                        translations["Baidu"]=result;
-                        return translatebyGoogle(encodeText);
-                    }).then(function (result) {
-                        console.log(result);
-                        translations["Google"]=result;
-                    }) .then(function () {
-                        let allResult = "";
-                        for (var key in translations) {
-                            if (translations.hasOwnProperty(key)) {
-                                var element = translations[key];
-                                allResult = allResult +"["+ key +"]\n"+element+"\n";
-                            }
-                        }
-                        console.log(allResult);
-                        preResult = allResult;
-                        return new vscode.Hover({language:"markdown",value:allResult});
-                    }) .catch(function(err){
+                return translatebyBaiDu(selection).then(function (result) {
+                        preResult = result;
+                        return new vscode.Hover({language:"markdown",value:result});
+                    }).catch(function(err){
                         console.log(err);
-                        return new vscode.Hover({language:"markdown",value:"出错了"});
                     });
+                // } else {
+                //     // 句子时
+                //     var encodeText="";
+                //     texts.forEach(function(v){
+                //         encodeText += encodeURI(v)+' '
+                //     });
+                //     // console.log("encodeText",encodeText);
                     
-                }
+                //     // return translatebyBaiDu(encodeText).then(function (result) {
+                //     //     preResult = result;
+                //     //     return new vscode.Hover({language:"markdown",value:"[BaiDu]: \n"+result+"\n----------\nHello"});
+                //     // }).catch(function(err){
+                //     //     console.log(err);
+                //     // });
+
+                //     var translations = {};
+                //     return translatebyBing(encodeText).then(function (result) {
+                //         // preResult = result;
+                //         console.log(result);
+                //         translations["Bing"]=result;
+                //         return translatebyBaiDu(encodeText);
+                //         // return result;
+                //         // return new vscode.Hover({language:"markdown",value:"[BaiDu]: \n"+result+"\n----------\nHello"});
+                //     }).then(function (result) {
+                //         console.log(result);
+                //         translations["Baidu"]=result;
+                //         return translatebyGoogle(encodeText);
+                //     }).then(function (result) {
+                //         console.log(result);
+                //         translations["Google"]=result;
+                //     }) .then(function () {
+                //         let allResult = "";
+                //         for (var key in translations) {
+                //             if (translations.hasOwnProperty(key)) {
+                //                 var element = translations[key];
+                //                 allResult = allResult +"["+ key +"]\n"+element+"\n";
+                //             }
+                //         }
+                //         console.log(allResult);
+                //         preResult = allResult;
+                //         return new vscode.Hover({language:"markdown",value:allResult});
+                //     }) .catch(function(err){
+                //         console.log(err);
+                //         return new vscode.Hover({language:"markdown",value:"出错了"});
+                //     });
+                    
+                // }
 
             } else {
                 console.log("鼠标发生了移动");
@@ -150,23 +152,10 @@ function hover2translate() {
 
 function translatebyBaiDu(text) {
     return new Promise(function (resolve,reject) {
-        let BaiduUrl = "http://fanyi.baidu.com/v2transapi";
-        request.post({
-            url:BaiduUrl,
-            formData:{
-                from:'en',
-                to:'zh',
-                query:text,
-                transtype:'realtime',
-                simple_means_flag:3
-            }},function (e,r,body) {
-            // console.log(body);
-            if (!e && body != "") {
-                let result = JSON.parse(body);
-                let translation = result.trans_result.data[0].dst;
-                // console.log(translation);
-                resolve(translation);
-            }
+        console.log('::translatebyBaiDu::');
+        baidu(text).then(result => {
+            console.log(result);
+            resolve(result);
         });
     });
 }
@@ -260,14 +249,57 @@ function translatebyBing(text) {
     });
 }
 
+var YouDao_headers = {
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+    "Accept-Encoding": "gzip, deflate",
+    "Accept-Language": "zh-CN,zh;q=0.8",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "DNT": "1",
+    "Host": "fanyi.youdao.com",
+    "Origin": "http://fanyi.youdao.com",
+    "Pragma": "no-cache",
+    "Referer": "http://fanyi.youdao.com/",
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36",
+    "X-Requested-With": "XMLHttpRequest"
+};
+
+var YouDao_e = {
+    "action": "FY_BY_CLICKBUTTION",
+    "client": "fanyideskweb",
+    "doctype": "json",
+    "from": "AUTO",
+    "i": "hello",
+    "keyfrom": "fanyi.web",
+    "salt": "1507884640456",
+    "sign": "4b324e531753f05f39fe718e28df61a7",
+    "smartresult": "dict",
+    "to": "AUTO",
+    "typoResult": "true",
+    "version": "2.1"
+};
+
 function translatebyYouDao(text) {
     // 有道
     return new Promise(
         function (resolve) {
-            let youdaoUrl="http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule&smartresult=ugc&sessionFrom=null";
-            request.post(youdaoUrl, {form:{type:"AUTO",i:text,doctype:"json",xmlVersion:"1.8",keyfrom:"fanyi.web",ue:"UTF-8",action:"FY_BY_CLICKBUTTON",typoResult:"true"}},function (e, r, body) {
+            // MD5算法
+            var md5 = crypto.createHash('md5');
+            
+            // 先获取salt和sign参数
+            let salt = "" + ((new Date).getTime() + parseInt(10 * Math.random(), 10));
+            let str = "fanyideskweb" + text + salt + "rY0D^0'nM0}g5Mm1z%1G4";
+            let sign = md5.update(str).digest('hex');
+            console.log(sign);
+            // salt = "1507907393207";
+            // sign = "eb12ebf61e5611e07613bae9fa5d2de5";
+            let youdaoUrl="http://fanyi.youdao.com/translate_o?smartresult=dict&smartresult=rule";
+            let YouDao_form = {i:text,from:"AUTO",to:"AUTO",smartresult:"dict",client:"fanyideskweb",salt:salt,sign:sign,doctype:"json",version:"2.1",keyfrom:"fanyi.web",action:"FY_BY_CLICKBUTTION",typoResult:true};
+            request.post(youdaoUrl, {form:YouDao_form,headers:YouDao_headers,gzip:true},function (e, r, body) {
                 // console.log(r);
-                // console.log(body);
+                console.log(YouDao_form);
+                console.log(body);
                 if (body.trim() != "") {
                     let result = JSON.parse(body.trim());
                     let smartResult = result.smartResult;
