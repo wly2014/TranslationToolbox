@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 var vscode = require('vscode');
 // var baidu = require('./baidu');
-// var youdao = require('./youdao2');
+var youdao = require('./youdao2');
 var youdao_sen = require('./youdao');
 
 // this method is called when your extension is activated
@@ -46,65 +46,26 @@ function hover2translate() {
             if (selection != "" && selection != " " && selection != preSelection) {
                 preSelection = selection;
                 let texts = selection.split(/\s+/);
-                // if (texts.length < 3) {
-                // 词或短语时     
+                
                 // youdao("Hello") // 测试
                 // baidu("Hello") // 测试
                 // translatebyBaiDu(selection)
-                return translatebyYouDao(selection, "sentence").then(function (result) {
-                        preResult = result;
-                        return new vscode.Hover({language:"markdown",value:result});
-                    }).catch(function(err){
-                        console.log(err);
-                    });
-                // } else {
-                //     return new vscode.Hover({language:"markdown",value:"目前仅支持单词或短语"});
-                //     // 句子时
-                //     var encodeText="";
-                //     texts.forEach(function(v){
-                //         encodeText += encodeURI(v)+' '
-                //     });
-                //     // console.log("encodeText",encodeText);
-                    
-                //     // return translatebyBaiDu(encodeText).then(function (result) {
-                //     //     preResult = result;
-                //     //     return new vscode.Hover({language:"markdown",value:"[BaiDu]: \n"+result+"\n----------\nHello"});
-                //     // }).catch(function(err){
-                //     //     console.log(err);
-                //     // });
-
-                //     var translations = {};
-                //     return translatebyBing(encodeText).then(function (result) {
-                //         // preResult = result;
-                //         console.log(result);
-                //         translations["Bing"]=result;
-                //         return translatebyBaiDu(encodeText);
-                //         // return result;
-                //         // return new vscode.Hover({language:"markdown",value:"[BaiDu]: \n"+result+"\n----------\nHello"});
-                //     }).then(function (result) {
-                //         console.log(result);
-                //         translations["Baidu"]=result;
-                //         return translatebyGoogle(encodeText);
-                //     }).then(function (result) {
-                //         console.log(result);
-                //         translations["Google"]=result;
-                //     }) .then(function () {
-                //         let allResult = "";
-                //         for (var key in translations) {
-                //             if (translations.hasOwnProperty(key)) {
-                //                 var element = translations[key];
-                //                 allResult = allResult +"["+ key +"]\n"+element+"\n";
-                //             }
-                //         }
-                //         console.log(allResult);
-                //         preResult = allResult;
-                //         return new vscode.Hover({language:"markdown",value:allResult});
-                //     }) .catch(function(err){
-                //         console.log(err);
-                //         return new vscode.Hover({language:"markdown",value:"出错了"});
-                //     });
-                    
-                // }
+                if (texts.length < 3) {
+                    // 词或短语时
+                    return translatebyYouDao(selection, "word").then(function (result) {
+                            preResult = result;
+                            return new vscode.Hover({language:"markdown",value:result});
+                        }).catch(function(err){
+                            console.log(err);
+                        });
+                } else {
+                    return translatebyYouDao(selection, "sentence").then(function (result) {
+                            preResult = result;
+                            return new vscode.Hover({language:"markdown",value:result});
+                        }).catch(function(err){
+                            console.log(err);
+                        });
+                }
 
             } else {
                 console.log("鼠标发生了移动");
@@ -134,10 +95,10 @@ function translatebyYouDao(text, flag) {
         console.log('::translatebyYouDao::');
         console.log("flag=", flag);
         if (flag == "word") {
-            // youdao(text).then(result => {
-            //     console.log(result);
-            //     resolve(result);
-            // });
+            youdao(text).then(result => {
+                console.log(result);
+                resolve(result);
+            });
         }else if(flag == "sentence"){
             youdao_sen(text).then(result => {
                 console.log(result);

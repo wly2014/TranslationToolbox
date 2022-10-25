@@ -7,7 +7,9 @@
 
 // var request = require('request');
 const axios = require('axios');
-const querystring = require('querystring');
+// const axios = require('flyio');
+// const querystring = require('querystring');
+const URLSearchParams = require('url').URLSearchParams
 var md5 = require('crypto-js/md5')
 
 //////// TEST ////////
@@ -23,7 +25,7 @@ module.exports = function youdao_sen(word) {
     
     var lts = ""+(new Date).getTime()
     var salt = lts + parseInt(10 * Math.random(), 10);
-    var sign = md5('fanyideskweb' + word + salt + 'Y2FYu%TNSbMCxc3t2u^XT').toString()
+    var sign = md5('fanyideskweb' + word + salt + 'Ygy_4c=r#e#4EX^NUGUc5').toString()   //TODO:后面的字符串会随时间改变吗？提取自: https://shared.ydstatic.com/fanyi/newweb/v1.1.10/scripts/newweb/fanyi.min.js line 
     
     var data = {
         'i': word,
@@ -34,7 +36,7 @@ module.exports = function youdao_sen(word) {
         'salt': salt,
         'sign': sign,
         'lts': lts,
-        'bv': 'e70edeacd2efbca394a58b9e43a6ed2a',
+        'bv': 'be559818a402acf44a9a990b7ef68fe9',
         'doctype': 'json',
         'version': '2.1',
         'keyfrom': 'fanyi.web',
@@ -42,29 +44,31 @@ module.exports = function youdao_sen(word) {
     };
     // console.log(data)
     const header = {
-        Accept: '*/*',
+        Accept: 'application/json, text/javascript, */*; q=0.01',
         "Accept-Encoding": 'gzip, deflate, br',
-        // "Accept-Language": 'zh-CN,zh;q=0.9',
+        "Accept-Language": 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,de;q=0.5',
         Connection: 'keep-alive',
         // "Content-Length": '240',
-        "Content-Type": 'application/x-www-form-urlencoded',
-        "Cookie": 'OUTFOX_SEARCH_USER_ID=-1@10.1.1.1',
-        Host: 'fanyi.youdao.com',
-        // Origin: 'https://fanyi.youdao.com',
+        "Content-Type": 'application/x-www-form-urlencoded; charset=UTF-8',
+        "Cookie": 'OUTFOX_SEARCH_USER_ID=-177960100@10.105.137.203; OUTFOX_SEARCH_USER_ID_NCOO=1124885976.2343872; ___rl__test__cookies=1666701333891',
+        "Host": 'fanyi.youdao.com',
+        Origin: 'https://fanyi.youdao.com',
         Referer: 'https://fanyi.youdao.com/',
-        // "sec-ch-ua": '"Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
-        // "sec-ch-ua-mobile": '?0',
-        // "sec-ch-ua-platform": '"Windows"',
-        // "Sec-Fetch-Dest": 'empty',
-        // "Sec-Fetch-Mode": 'cors',
-        // "Sec-Fetch-Site": 'same-origin',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36'
-        // 'X-Requested-With': "XMLHttpRequest"
+        "sec-ch-ua": '"Chromium";v="106", "Microsoft Edge";v="106", "Not;A=Brand";v="99"',
+        "sec-ch-ua-mobile": '?0',
+        "sec-ch-ua-platform": '"Windows"',
+        "Sec-Fetch-Dest": 'empty',
+        "Sec-Fetch-Mode": 'cors',
+        "Sec-Fetch-Site": 'same-origin',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.47',
+        'X-Requested-With': "XMLHttpRequest"
     }
     // console.log(header)
 
     return new Promise((resolve, reject) => {
-        axios.post(youdaoUrl, querystring.stringify(data), {headers:header})
+        const searchParams = new URLSearchParams(data)
+        // console.log(searchParams.toString())
+        axios.post(youdaoUrl, searchParams.toString(), {headers:header})
         .then(res => {
             // console.log(res)
             // console.log("result of Youdao:")

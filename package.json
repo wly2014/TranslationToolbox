@@ -3,7 +3,7 @@
 	"displayName": "TranslationToolbox",
 	"description": "划词翻译;整合了百度翻译,Bing,及有道翻译的相关API",
 	"keywords": ["translation", "youdao", "bing", "baidu"],
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"publisher": "WLY",
 	"icon": "images/icon.png",
 	"engines": {
