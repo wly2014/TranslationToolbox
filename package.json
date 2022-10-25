@@ -1,12 +1,13 @@
 {
 	"name": "translationtoolbox",
 	"displayName": "TranslationToolbox",
-	"description": "划词翻译;整合了百度，Google，Bing，及有道翻译的相关API",
-	"version": "0.3.0",
+	"description": "划词翻译;整合了百度翻译,Bing,及有道翻译的相关API",
+	"keywords": ["translation", "youdao", "bing", "baidu"],
+	"version": "0.4.1",
 	"publisher": "WLY",
 	"icon": "images/icon.png",
 	"engines": {
-		"vscode": "^1.5.0"
+		"vscode": "^1.68.0"
 	},
 	"categories": [
 		"Other"
@@ -36,19 +37,38 @@
 		"test": "node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
-		"typescript": "^2.0.3",
-		"vscode": "^1.0.0",
-		"mocha": "^2.3.3",
-		"eslint": "^3.6.0",
+		"@types/mocha": "^2.2.32",
 		"@types/node": "^6.0.40",
-		"@types/mocha": "^2.2.32"
+		"eslint": "^3.6.0",
+		"mocha": "^2.3.3",
+		"typescript": "^2.0.3",
+		"vscode": "^1.1.37"
 	},
 	"dependencies": {
-		"request": "^2.67.0"
+		"axios": "^0.27.2",
+		"crypto-js": "^4.1.1",
+		"fetch": "^1.1.0",
+		"flyio": "^0.6.14",
+		"iconv-lite": "^0.6.3",
+		"node-fetch": "^2.6.7",
+		"querystring": "^0.2.1",
+		"request": "^2.88.2",
+		"whatwg-fetch": "^3.6.2"
 	},
 	"__metadata": {
 		"id": "e1dc558b-88e8-4dc7-9ff3-f995909485f4",
 		"publisherId": "3dcd93a7-6859-431a-967b-e175b201363f",
 		"publisherDisplayName": "WLY"
-	}
+	},
+
+	"license": "SEE LICENSE IN LICENSE.txt",
+    "bugs": {
+        "url": "https://github.com/wly2014/TranslationToolbox/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wly2014/TranslationToolbox"
+    },
+    "homepage": "https://github.com/wly2014/TranslationToolbox/blob/master/README.md"
+
 }
