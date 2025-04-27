@@ -1,118 +1,174 @@
 ////////////////////////////////////////////////////////////////////////
 // 使用GET请求代替POST请求可以获取正确的翻译数据。
 // Author：1059387852@qq.com
-// Time: 2019/2/23
+// Time: 2022/10/25
 // Desc: 百度翻译接口
-// Based: 基础版代码（Python3）作者链接：https://www.devtool.top/article/55
+// Based: https://blog.csdn.net/wangzirui32/article/details/118735332
+// Key：https://axios-http.com/docs/urlencoded
 ////////////////////////////////////////////////////////////////////////
 
-var request = require('request');
+const axios = require('axios');
+const querystring = require('querystring');
 
-module.exports = function baidu(source) {
-	var gtk = ""
-	var token = ""
-	var translation_result = "";
-	var header = {
-		"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
-		"Cookie": "BAIDUID=B39E1775B9F1707A3D6121253D24EDE2:FG=1; BIDUPSID=B39E1775B9F1707A3D6121253D24EDE2; PSTM=1550837901; H_PS_PSSID=1468_21113_18560_28558_28415_20719; delPer=0; PSINO=1; locale=zh; Hm_lvt_64ecd82404c51e03dc91cb9e8c025574=1548324797,1548335580,1550837198,1550890816; Hm_lpvt_64ecd82404c51e03dc91cb9e8c025574=1550890816; REALTIME_TRANS_SWITCH=1; FANYI_WORD_SWITCH=1; HISTORY_SWITCH=1; SOUND_SPD_SWITCH=1; SOUND_PREFER_SWITCH=1; to_lang_often=%5B%7B%22value%22%3A%22zh%22%2C%22text%22%3A%22%u4E2D%u6587%22%7D%2C%7B%22value%22%3A%22en%22%2C%22text%22%3A%22%u82F1%u8BED%22%7D%5D; from_lang_often=%5B%7B%22value%22%3A%22en%22%2C%22text%22%3A%22%u82F1%u8BED%22%7D%2C%7B%22value%22%3A%22zh%22%2C%22text%22%3A%22%u4E2D%u6587%22%7D%5D",
-	}
+// 保存全局变量cookie
+// 判断是否更新了cookie
+baidu("spring").then(result => {
+    console.log("Final");
+    console.log(result);
+});
+// module.exports = 
+function baidu(content) {
+    console.log("[[BAIDU translation]]")
+    // 获取cookie
+    var url_baidu = "https://fanyi.baidu.com/"
+    var headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.47"
+    }
+    return new Promise((resolve, reject) => {
+        axios.get(url_baidu, {headers:headers})
+        .then(function (response) {
+            console.log(response.headers['set-cookie'])
+            var cookie_str = response.headers['set-cookie'][0]
+            console.log(typeof(cookie_str))
+            var re_ = /BAIDUID=(.+?);/gi;
+            var arrMactches = cookie_str.match(re_)
+            var BAIDUID = arrMactches[0] //.slice(0,-1)
+            // console.log(arrMactches[0])
+            // console.log(BAIDUID)
+            var Cookie = BAIDUID
+            // /////////////////////////////////////////////////////
+            Cookie = "BAIDUID=D41F71D2D4B3AAF41F15452D1CE6A2D8:FG=1; BAIDUID_BFESS=8CFCCD3848AC417D86E03D2D0AF5C4B3:FG=1"
+            console.log(Cookie)
 
-	var options = {
-		url: 'https://fanyi.baidu.com',
-		headers: header
-	};
-	return new Promise((resolve, reject) => {
-		var request_type = request(options, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				// console.log(body) // Show the HTML for the Google homepage.
-				html = body;
-				var gtk = html.match("window.gtk = '(.*?)';")[1];
-				console.log(gtk);
-				var token = html.match("token: '(.*?)'")[1];
-				console.log(token);
-				// var source = 'There is one word too many in this sentence';
-				var sign = hash(source, gtk);
-				console.log('source = ' + source + ', sign = ' + sign);
-				var fromLanguage = 'en';
-				var toLanguage = 'zh';
-				var v2transapi = 'https://fanyi.baidu.com/v2transapi?from=' + fromLanguage + '&to=' + toLanguage + '&query=' + source + '&transtype=translang&simple_means_flag=3&sign=' + sign + '&token=' + token;
-				v2transapi = encodeURI(v2transapi);
-				// console.log(v2transapi);
-				var options = {
-					url: v2transapi,
-					headers: header
-				};
-				request(options, function (error, response, body) {
-					if (!error && response.statusCode == 200) {
-						// console.log(body);
-						body = eval('(' + body + ')');
+            // get token
+            var headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.47",
+                "Cookie": Cookie
+            }
+            axios.get(url_baidu, {headers:headers})
+            .then(function (response) {
+                // console.log(response)
+                // var cookie_str = response.headers['set-cookie'][0]
+                // console.log(cookie_str)
+                var re_ = /token: '(.+?)'/gi;
+                var arrMactches = response.data.match(re_)
+                console.log(arrMactches)
+                var token = arrMactches[0].slice(8,-1)
+                console.log(token)
+                // //////////////////
+                token = "af10435b99924f39614bd86996c40221"
 
-						// 如果输入是句话，body.dict_result = [];
-						isSentence = true;
-						// console.log(body.dict_result)
-						for (var i in body.dict_result) {
-							isSentence = false;
-							break;
-						}
-						if (!isSentence) {
-							// 是个单词或者短语   
-							// 如果body.dict_result.simple_means.symbols[0].parts[0]中没有part这个key，应该是个短语。
-							var parts = body.dict_result.simple_means.symbols[0].parts;
-
-							for (var i in parts) {
-								var part = parts[i];
-								if (part.hasOwnProperty("part")) {
-									// 单词
-									if (translation_result != "") {
-										translation_result = translation_result + "\n";
-									}
-									translation_result = translation_result + "[" + part.part + "] ";
-									// console.log(part.part);
-								}
-								for (var i in part.means) {
-									var element = part.means[i];
-									translation_result = translation_result + element + ";";
-								}
-								// console.log(part.means);
-							}
-						} else {
-							// 是个句子
-							var result = body.trans_result.data[0].dst;
-							translation_result = result;
-							// console.log(result);
-						}
-					} else {
-						translation_result = error;
-						console.warn(error);
-					}
-					resolve(translation_result);
-				});
-			} else {
-				translation_result = error;
-				console.warn(error);
-				resolve(translation_result);
-			}
-		});
-	});
+                // translation
+                // var content = "a collection of facts from which conclusions may be drawn"
+                translation(content, token, headers).then(result => {
+                    resolve(result);
+                });
+                
+            })
+            .catch(function (error) {
+                console.log(error);
+                reject("Translate by Baidu errors 1.")
+            });
+            
+        })
+        .catch(function (error) {
+            console.log(error);
+            reject("Translate by Baidu errors 2.")
+        });
+    });
 }
 
-function a(r, o) {
-	for (var t = 0; t < o.length - 2; t += 3) {
-		var a = o.charAt(t + 2);
-		a = a >= "a" ? a.charCodeAt(0) - 87 : Number(a), a = "+" === o.charAt(t + 1) ? r >>> a : r << a, r = "+" === o.charAt(t) ? r + a & 4294967295 : r ^ a
-	}
-	return r
+function translation(content, token, headers) {
+    console.log(headers)
+    // var content = "Hi"
+    var sign = e(content)
+    // /////////////////////
+    sign = "381491.78082"
+
+    var data = {
+        'from': 'en',
+        'to': 'zh',
+        'query': content,
+        'transtype': 'translang',
+        'simple_means_flag': '3',
+        'sign': sign,
+        'token': token,
+        'domain': 'common',
+    }
+    console.log(data)
+    var url = "https://fanyi.baidu.com/v2transapi"
+    return new Promise((resolve, reject) => {
+        axios.post(url, querystring.stringify(data), {headers:headers})
+        .then(function (response) {
+            // 1. 完整结果
+            // console.log(response)
+            var parts = response.data["dict_result"]['simple_means']["symbols"][0]["parts"]
+            // console.log(parts)
+            var r1 = ""
+            for (let index = 0; index < parts.length; index++) {
+                const element = parts[index];
+                // console.log(parts[index])
+                // console.log(element.part)
+                // console.log(element.means.join(";"))
+                r1 = r1.concat(element.part, " ", element.means.slice(0,3).join(","), " ")
+            }
+            // console.log(r1)
+            resolve(r1)
+
+            // 2. 简单结果
+            // var result = response.data["trans_result"]['data'][0]['dst']
+            // console.log(result)
+            // return result
+
+        })
+        .catch(function (error) {
+            console.log(error);
+            reject("Translate by Baidu errors 3.")
+        });
+    });
 }
-var C = null;
-var hash = function (r, _gtk) {
-	var o = r.length;
-	o > 30 && (r = "" + r.substr(0, 10) + r.substr(Math.floor(o / 2) - 5, 10) + r.substr(-10, 10));
-	var t = void 0,
-		t = null !== C ? C : (C = _gtk || "") || "";
-	for (var e = t.split("."), h = Number(e[0]) || 0, i = Number(e[1]) || 0, d = [], f = 0, g = 0; g < r.length; g++) {
-		var m = r.charCodeAt(g);
-		128 > m ? d[f++] = m : (2048 > m ? d[f++] = m >> 6 | 192 : (55296 === (64512 & m) && g + 1 < r.length && 56320 === (64512 & r.charCodeAt(g + 1)) ? (m = 65536 + ((1023 & m) << 10) + (1023 & r.charCodeAt(++g)), d[f++] = m >> 18 | 240, d[f++] = m >> 12 & 63 | 128) : d[f++] = m >> 12 | 224, d[f++] = m >> 6 & 63 | 128), d[f++] = 63 & m | 128)
-	}
-	for (var S = h, u = "+-a^+6", l = "+-3^+b+-f", s = 0; s < d.length; s++) S += d[s], S = a(S, u);
-	return S = a(S, l), S ^= i, 0 > S && (S = (2147483647 & S) + 2147483648), S %= 1e6, S.toString() + "." + (S ^ h)
-};
+
+
+function e(r) {
+    var i = "320305.131321201";
+    var o = r.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
+    if (null === o) {
+        var t = r.length;
+        t > 30 && (r = "" + r.substr(0, 10) + r.substr(Math.floor(t / 2) - 5, 10) + r.substr(-10, 10))
+    } else {
+        for (var e = r.split(/[\uD800-\uDBFF][\uDC00-\uDFFF]/), C = 0, h = e.length, f = []; h > C; C++)
+            "" !== e[C] && f.push.apply(f, a(e[C].split(""))),
+            C !== h - 1 && f.push(o[C]);
+        var g = f.length;
+        g > 30 && (r = f.slice(0, 10).join("") + f.slice(Math.floor(g / 2) - 5, Math.floor(g / 2) + 5).join("") + f.slice(-10).join(""))
+    }
+    var u = void 0
+      , l = "" + String.fromCharCode(103) + String.fromCharCode(116) + String.fromCharCode(107);
+    u = null !== i ? i : (i = window[l] || "") || "";
+    for (var d = u.split("."), m = Number(d[0]) || 0, s = Number(d[1]) || 0, S = [], c = 0, v = 0; v < r.length; v++) {
+        var A = r.charCodeAt(v);
+        128 > A ? S[c++] = A : (2048 > A ? S[c++] = A >> 6 | 192 : (55296 === (64512 & A) && v + 1 < r.length && 56320 === (64512 & r.charCodeAt(v + 1)) ? (A = 65536 + ((1023 & A) << 10) + (1023 & r.charCodeAt(++v)),
+        S[c++] = A >> 18 | 240,
+        S[c++] = A >> 12 & 63 | 128) : S[c++] = A >> 12 | 224,
+        S[c++] = A >> 6 & 63 | 128),
+        S[c++] = 63 & A | 128)
+    }
+    for (var p = m, F = "" + String.fromCharCode(43) + String.fromCharCode(45) + String.fromCharCode(97) + ("" + String.fromCharCode(94) + String.fromCharCode(43) + String.fromCharCode(54)), D = "" + String.fromCharCode(43) + String.fromCharCode(45) + String.fromCharCode(51) + ("" + String.fromCharCode(94) + String.fromCharCode(43) + String.fromCharCode(98)) + ("" + String.fromCharCode(43) + String.fromCharCode(45) + String.fromCharCode(102)), b = 0; b < S.length; b++)
+        p += S[b],
+        p = n(p, F);
+    return p = n(p, D),
+    p ^= s,
+    0 > p && (p = (2147483647 & p) + 2147483648),
+    p %= 1e6,
+    p.toString() + "." + (p ^ m)
+}
+
+function n(r, o) {
+    for (var t = 0; t < o.length - 2; t += 3) {
+        var a = o.charAt(t + 2);
+        a = a >= "a" ? a.charCodeAt(0) - 87 : Number(a),
+        a = "+" === o.charAt(t + 1) ? r >>> a : r << a,
+        r = "+" === o.charAt(t) ? r + a & 4294967295 : r ^ a
+    }
+    return r
+}

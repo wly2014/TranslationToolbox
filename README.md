@@ -35,6 +35,27 @@
 
 > TODO: 修复`百度翻译`
 
+
+### 0.5.0
+
+> 删除了有道翻译的部分API，增加了对**豆包大模型**翻译的支持。
+
+启用豆包大模型需要注册个人账号以获取免费的大模型API，具体配置步骤如下：
+
+1, 注册 [火山引擎](https://www.volcengine.com/) 账号，并完成验证
+
+2, 在火山方舟中的API Key管理中可以申请和复制API Key
+
+![](./images/apikey.png)
+
+3, 在火山方舟中的`开通管理`中激活模型`Doubao-1.5-pro-32k`
+
+![](./images/model.png)
+
+4, 在VS Code的Setting搜索DouBaoApiKey，将申请到的API Key填入即可。
+
+![](./images/vscode.png)
+
 ## Source
 
 `软件出现翻译的API错误时，请通过Github提交issue通知我。`

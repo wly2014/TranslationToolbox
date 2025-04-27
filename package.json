@@ -1,9 +1,9 @@
 {
 	"name": "translationtoolbox",
 	"displayName": "TranslationToolbox",
-	"description": "划词翻译;整合了百度翻译,Bing,及有道翻译的相关API",
-	"keywords": ["translation", "youdao", "bing", "baidu"],
-	"version": "0.4.2",
+	"description": "划词翻译; 整合了百度翻译, 及豆包大模型",
+	"keywords": ["translation", "baidu", "doubao", "big model"],
+	"version": "0.5.0",
 	"publisher": "WLY",
 	"icon": "images/icon.png",
 	"engines": {
@@ -30,7 +30,25 @@
 				"command": "translationtoolbox.translate",
 				"title": "translate"
 			}
-		]
+		],
+		"configuration": {
+			"title": "translationtoolbox",
+			"properties": {
+				"DouBaoApiKey": {
+					"type": "string",
+					"default": "default",
+					"description": "豆包大模型的API Key"
+				},
+				"DouBaoModel": {
+					"type": "string",
+					"description": "选择大模型版本",
+					"enum": [
+						"doubao-1.5-pro-32k-250115"
+						],
+					"default": "doubao-1.5-pro-32k-250115"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"postinstall": "node ./node_modules/vscode/bin/install",

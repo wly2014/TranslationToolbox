@@ -4,6 +4,7 @@ var vscode = require('vscode');
 // var baidu = require('./baidu');
 var youdao = require('./youdao2');
 var youdao_sen = require('./youdao');
+var callDoubaoAPI = require('./bigmodel');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -59,11 +60,12 @@ function hover2translate() {
                             console.log(err);
                         });
                 } else {
-                    return translatebyYouDao(selection, "sentence").then(function (result) {
+                    return translatebyBigModel(selection, "sentence").then(function (result) {
                             preResult = result;
                             return new vscode.Hover({language:"markdown",value:result});
                         }).catch(function(err){
                             console.log(err);
+                            return new vscode.Hover({language:"markdown",value:"BigModel:: something wrong."});
                         });
                 }
 
@@ -107,6 +109,17 @@ function translatebyYouDao(text, flag) {
         }else{
             resolve("Flag is not correct.");
         }
+    });
+}
+
+function translatebyBigModel(text, flag) {
+    return new Promise(function (resolve, reject) {
+        console.log('::translatebyBigModel::');
+        console.log("flag=", flag);
+        callDoubaoAPI(text).then(result => {
+            console.log(result);
+            resolve("Doubao:: " + result);
+        });
     });
 }
 
