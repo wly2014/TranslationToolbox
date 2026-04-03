@@ -5,15 +5,13 @@
 ////////////////////////////////////////////////////////////////////////
 
 const axios = require('axios');
-const URLSearchParams = require('url').URLSearchParams
-var md5 = require('crypto-js/md5')
 var vscode = require('vscode');
 
 module.exports = async function callDoubaoAPI(word) {
     const apiKey = vscode.workspace.getConfiguration().get("DouBaoApiKey");
     console.log(apiKey)
     const apiUrl = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
-    
+
     try {
         const response = await axios.post(apiUrl, {
             model: "doubao-1.5-pro-32k-250115",
@@ -38,8 +36,7 @@ module.exports = async function callDoubaoAPI(word) {
         return response.data["choices"][0]["message"]["content"];
     } catch (error) {
         console.error("调用API时出错:", error.message);
-        
-        // 打印详细的错误信息
+
         if (error.response) {
             console.error("状态码:", error.response.status);
             console.error("响应数据:", error.response.data);
@@ -48,11 +45,8 @@ module.exports = async function callDoubaoAPI(word) {
         } else {
             console.error("设置请求时出错:", error.message);
         }
-        
+
         return JSON.stringify(error.response.data);
     }
 }
-
-
-
 

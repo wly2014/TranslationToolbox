@@ -5,28 +5,17 @@
 // Key: https://axios-http.com/docs/urlencoded
 ////////////////////////////////////////////////////////////////////////
 
-// var request = require('request');
 const axios = require('axios');
-// const axios = require('flyio');
-// const querystring = require('querystring');
 const URLSearchParams = require('url').URLSearchParams
 var md5 = require('crypto-js/md5')
 
-//////// TEST ////////
-// youdao_sen("It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of light, it was the season of darkness, it was the spring of hope, it was the winter of despair.")
-// .then(result => {
-//     console.log("Result");
-//     console.log(result);
-// });
-/////////////////////
 module.exports = function youdao_sen(word) {
-    // console.log(word)
     const youdaoUrl = "https://fanyi.youdao.com/translate_o?smartresult=dict&smartresult=rule"
-    
+
     var lts = ""+(new Date).getTime()
     var salt = lts + parseInt(10 * Math.random(), 10);
-    var sign = md5('fanyideskweb' + word + salt + 'Ygy_4c=r#e#4EX^NUGUc5').toString()   //TODO:后面的字符串会随时间改变吗？提取自: https://shared.ydstatic.com/fanyi/newweb/v1.1.10/scripts/newweb/fanyi.min.js line 
-    
+    var sign = md5('fanyideskweb' + word + salt + 'Ygy_4c=r#e#4EX^NUGUc5').toString()
+
     var data = {
         'i': word,
         'from': 'AUTO',
@@ -42,13 +31,11 @@ module.exports = function youdao_sen(word) {
         'keyfrom': 'fanyi.web',
         'action': 'FY_BY_CLICKBUTTION'
     };
-    // console.log(data)
     const header = {
         Accept: 'application/json, text/javascript, */*; q=0.01',
         "Accept-Encoding": 'gzip, deflate, br',
         "Accept-Language": 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,de;q=0.5',
         Connection: 'keep-alive',
-        // "Content-Length": '240',
         "Content-Type": 'application/x-www-form-urlencoded; charset=UTF-8',
         "Cookie": 'OUTFOX_SEARCH_USER_ID=-177960100@10.105.137.203; OUTFOX_SEARCH_USER_ID_NCOO=1124885976.2343872; ___rl__test__cookies=1666701333891',
         "Host": 'fanyi.youdao.com',
@@ -63,16 +50,11 @@ module.exports = function youdao_sen(word) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.47',
         'X-Requested-With': "XMLHttpRequest"
     }
-    // console.log(header)
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
         const searchParams = new URLSearchParams(data)
-        // console.log(searchParams.toString())
         axios.post(youdaoUrl, searchParams.toString(), {headers:header})
         .then(res => {
-            // console.log(res)
-            // console.log("result of Youdao:")
-            // console.log(res.data.translateResult)
             var result = res.data.translateResult[0][0]["tgt"]
             resolve(result)
         }).catch(err => {
@@ -82,5 +64,4 @@ module.exports = function youdao_sen(word) {
     })
 
 }
-
 

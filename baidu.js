@@ -12,11 +12,6 @@ const querystring = require('querystring');
 
 // 保存全局变量cookie
 // 判断是否更新了cookie
-baidu("spring").then(result => {
-    console.log("Final");
-    console.log(result);
-});
-// module.exports = 
 function baidu(content) {
     console.log("[[BAIDU translation]]")
     // 获取cookie
@@ -171,4 +166,13 @@ function n(r, o) {
         r = "+" === o.charAt(t) ? r + a & 4294967295 : r ^ a
     }
     return r
+}
+
+module.exports = baidu;
+
+if (require.main === module) {
+    baidu("spring").then(result => {
+        console.log("Final");
+        console.log(result);
+    });
 }

@@ -2,21 +2,19 @@
     "env": {
         "browser": false,
         "commonjs": true,
-        "es6": true,
+        "es2022": true,
         "node": true
     },
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "sourceType": "module"
+        "ecmaVersion": 2022,
+        "sourceType": "script"
     },
     "rules": {
         "no-const-assign": "warn",
         "no-this-before-super": "warn",
         "no-undef": "warn",
         "no-unreachable": "warn",
-        "no-unused-vars": "warn",
+        "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
         "constructor-super": "warn",
         "valid-typeof": "warn"
     }

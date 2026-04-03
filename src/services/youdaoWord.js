@@ -8,7 +8,7 @@
 const axios = require('axios');
 
 module.exports = function youdao(source) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
         axios.get('https://dict.youdao.com/suggest?num=5&ver=3.0&doctype=json&cache=false&le=en&q='+source)
         .then(res => {
             console.log(res.data);
@@ -19,6 +19,6 @@ module.exports = function youdao(source) {
             console.log('错误: ' + err)
             resolve("error::"+err)
         })
-        
+
     });
 }
