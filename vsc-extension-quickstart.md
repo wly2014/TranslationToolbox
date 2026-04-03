@@ -10,14 +10,11 @@
 | `src/extension.js` | **扩展入口**：`activate` / `deactivate`，注册命令并在激活后注册划词 Hover。 |
 | `src/hoverTranslation.js` | 划词翻译逻辑：根据选中文本长度选择有道单词建议或豆包长句翻译。 |
 | `src/services/youdaoWord.js` | 有道词典「单词/短语」建议接口。 |
-| `src/services/youdaoSentence.js` | 有道网页翻译接口（句子级，当前主流程中长文本走豆包，保留供扩展）。 |
 | `src/services/doubao.js` | 豆包（火山方舟）Chat Completions 调用，读取用户配置中的 API Key。 |
 | `test/index.js` | 测试运行器（导出 `run()`，供 VS Code 测试宿主加载）。 |
 | `test/extension.test.js` | 示例单元测试。 |
 | `test/runTest.js` | CLI 用：`npm test` 时通过 `@vscode/test-electron` 拉起 VS Code 并执行测试。 |
 | `jsconfig.json` | JavaScript 工程配置（含 `@types/vscode` 等，便于编辑器智能提示）。 |
-
-根目录下的 `baidu.js` 等为历史/独立脚本，**未**被扩展主流程引用；修改翻译行为请以 `src/` 下文件为准。
 
 ## 环境要求
 

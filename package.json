@@ -2,7 +2,7 @@
 	"name": "translationtoolbox",
 	"displayName": "TranslationToolbox",
 	"description": "划词翻译; 整合了百度翻译, 及豆包大模型",
-	"keywords": ["translation", "baidu", "doubao", "big model"],
+	"keywords": ["translation", "youdao", "doubao", "LLM"],
 	"version": "0.5.0",
 	"publisher": "WLY",
 	"icon": "images/icon.png",

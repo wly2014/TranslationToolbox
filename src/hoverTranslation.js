@@ -1,32 +1,20 @@
 const vscode = require('vscode');
 const youdaoWord = require('./services/youdaoWord');
-const youdaoSentence = require('./services/youdaoSentence');
 const callDoubaoAPI = require('./services/doubao');
 
-function translatebyYouDao(text, flag) {
+function translatebyYouDao(text) {
     return new Promise(function (resolve, _reject) {
         console.log('::translatebyYouDao::');
-        console.log("flag=", flag);
-        if (flag == "word") {
-            youdaoWord(text).then(result => {
-                console.log(result);
-                resolve(result);
-            });
-        } else if (flag == "sentence") {
-            youdaoSentence(text).then(result => {
-                console.log(result);
-                resolve(result);
-            });
-        } else {
-            resolve("Flag is not correct.");
-        }
+        youdaoWord(text).then(result => {
+            console.log(result);
+            resolve(result);
+        });
     });
 }
 
-function translatebyBigModel(text, flag) {
+function translatebyBigModel(text) {
     return new Promise(function (resolve, _reject) {
         console.log('::translatebyBigModel::');
-        console.log("flag=", flag);
         callDoubaoAPI(text).then(result => {
             console.log(result);
             resolve("Doubao:: " + result);
@@ -48,14 +36,14 @@ function registerHoverTranslation(context) {
                 let texts = selection.split(/\s+/);
 
                 if (texts.length < 3) {
-                    return translatebyYouDao(selection, "word").then(function (result) {
+                    return translatebyYouDao(selection).then(function (result) {
                             preResult = result;
                             return new vscode.Hover({ language: "markdown", value: result });
                         }).catch(function (err) {
                             console.log(err);
                         });
                 } else {
-                    return translatebyBigModel(selection, "sentence").then(function (result) {
+                    return translatebyBigModel(selection).then(function (result) {
                             preResult = result;
                             return new vscode.Hover({ language: "markdown", value: result });
                         }).catch(function (err) {
