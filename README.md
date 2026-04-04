@@ -1,6 +1,6 @@
 # TranslationToolbox README
 
-翻译工具箱，使得文本翻译更加方便快捷，启用快捷键： `ctrl+alt+t or cmd+alt+t`
+翻译工具箱：窗口加载完成后扩展自动激活；快捷键 `ctrl+alt+t` / `cmd+alt+t` 仍可用于执行 **translate** 命令（可选）。
 
 ## Features
 
@@ -8,9 +8,9 @@
 
 ## Quick Start
 
-* 安装该扩展
-* 使用快捷键 `ctrl+alt+t or cmd+alt+t` 启用TranslationToolbox扩展
-* 选中想要翻译的文本，并将**鼠标移至其上**，即可显示翻译结果
+* 安装该扩展（启动即激活，**无需**先按快捷键）
+* 选中要翻译的文本，**鼠标悬停**即可查看结果（短词走有道；长句走豆包，需配置 API Key）
+* 可选：快捷键 `ctrl+alt+t` / `cmd+alt+t` 执行 `translate` 命令
 
 ![](./images/Animation.gif)
 
@@ -36,23 +36,27 @@
 > TODO: 修复`百度翻译`
 
 
+### 0.6.0
+
+> **启动即激活**（`onStartupFinished`）；**长句翻译**须配置有效 `translationtoolbox.doubaoApiKey`（旧键 `DouBaoApiKey` 仍兼容）；**模型 ID** 与设置 `translationtoolbox.doubaoModel` 一致。
+
 ### 0.5.0
 
 > 删除了有道翻译的部分API，增加了对**豆包大模型**翻译的支持。
 
 启用豆包大模型需要注册个人账号以获取免费的大模型API，具体配置步骤如下：
 
-1, 注册 [火山引擎](https://www.volcengine.com/) 账号，并完成验证
+1. 注册 [火山引擎](https://www.volcengine.com/) 账号，并完成验证
 
-2, 在火山方舟中的API Key管理中可以申请和复制API Key
+2. 在火山方舟中的 API Key 管理中申请并复制 API Key
 
 ![](./images/apikey.png)
 
-3, 在火山方舟中的`开通管理`中激活模型`Doubao-1.5-pro-32k`
+3. 在火山方舟「开通管理」中激活模型 `Doubao-1.5-pro-32k`
 
 ![](./images/model.png)
 
-4, 在VS Code的Setting搜索DouBaoApiKey，将申请到的API Key填入即可。
+4. 在 VS Code 设置中搜索 **`translationtoolbox.doubaoApiKey`**（或兼容旧项 **`DouBaoApiKey`**），填入 API Key。
 
 ![](./images/vscode.png)
 

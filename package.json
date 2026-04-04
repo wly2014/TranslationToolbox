@@ -1,19 +1,19 @@
 {
 	"name": "translationtoolbox",
 	"displayName": "TranslationToolbox",
-	"description": "划词翻译; 整合了百度翻译, 及豆包大模型",
+	"description": "划词翻译：有道短词 + 豆包长句；启动即激活",
 	"keywords": ["translation", "youdao", "doubao", "LLM"],
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"publisher": "WLY",
 	"icon": "images/icon.png",
 	"engines": {
-		"vscode": "^1.68.0"
+		"vscode": "^1.74.0"
 	},
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:translationtoolbox.translate"
+		"onStartupFinished"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
@@ -34,17 +34,30 @@
 		"configuration": {
 			"title": "translationtoolbox",
 			"properties": {
-				"DouBaoApiKey": {
+				"translationtoolbox.doubaoApiKey": {
 					"type": "string",
-					"default": "default",
-					"description": "豆包大模型的API Key"
+					"default": "",
+					"markdownDescription": "火山方舟 API Key（长句翻译必填）。若曾使用旧项 `DouBaoApiKey`，仍会自动读取。"
 				},
-				"DouBaoModel": {
+				"translationtoolbox.doubaoModel": {
 					"type": "string",
-					"description": "选择大模型版本",
+					"description": "豆包模型 ID（须与方舟已开通模型一致）",
 					"enum": [
 						"doubao-1.5-pro-32k-250115"
-						],
+					],
+					"default": "doubao-1.5-pro-32k-250115"
+				},
+				"translationtoolbox.DouBaoApiKey": {
+					"type": "string",
+					"default": "",
+					"description": "（兼容旧版）豆包 API Key，优先使用 translationtoolbox.doubaoApiKey。"
+				},
+				"translationtoolbox.DouBaoModel": {
+					"type": "string",
+					"description": "（兼容旧版）模型 ID，优先使用 translationtoolbox.doubaoModel。",
+					"enum": [
+						"doubao-1.5-pro-32k-250115"
+					],
 					"default": "doubao-1.5-pro-32k-250115"
 				}
 			}
@@ -74,13 +87,12 @@
 	},
 
 	"license": "SEE LICENSE IN LICENSE.txt",
-    "bugs": {
-        "url": "https://github.com/wly2014/TranslationToolbox/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wly2014/TranslationToolbox"
-    },
-    "homepage": "https://github.com/wly2014/TranslationToolbox/blob/master/README.md"
-
+	"bugs": {
+		"url": "https://github.com/wly2014/TranslationToolbox/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wly2014/TranslationToolbox"
+	},
+	"homepage": "https://github.com/wly2014/TranslationToolbox/blob/master/README.md"
 }

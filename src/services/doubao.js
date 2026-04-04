@@ -5,48 +5,59 @@
 ////////////////////////////////////////////////////////////////////////
 
 const axios = require('axios');
-var vscode = require('vscode');
+const { getDoubaoApiKeyResolved, getDoubaoModelResolved, isValidDoubaoApiKey } = require('../config');
 
 module.exports = async function callDoubaoAPI(word) {
-    const apiKey = vscode.workspace.getConfiguration().get("DouBaoApiKey");
-    console.log(apiKey)
-    const apiUrl = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+    const apiKey = getDoubaoApiKeyResolved();
+    if (!isValidDoubaoApiKey(apiKey)) {
+        return Promise.reject(new Error('INVALID_DOUBAO_API_KEY'));
+    }
+
+    const model = getDoubaoModelResolved();
+    const apiUrl = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
 
     try {
-        const response = await axios.post(apiUrl, {
-            model: "doubao-1.5-pro-32k-250115",
-            messages: [
-                {
-                    role: "system",
-                    content: "你是专业翻译助手，精准转换中英内容."
-                },
-                {
-                    role: "user",
-                    content: word
+        const response = await axios.post(
+            apiUrl,
+            {
+                model: model,
+                messages: [
+                    {
+                        role: 'system',
+                        content: '你是专业翻译助手，精准转换中英内容.'
+                    },
+                    {
+                        role: 'user',
+                        content: word
+                    }
+                ]
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${apiKey}`
                 }
-            ]
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
             }
-        });
+        );
 
-        console.log("API响应:", response.data);
-        return response.data["choices"][0]["message"]["content"];
+        console.log('API响应:', response.data);
+        return response.data['choices'][0]['message']['content'];
     } catch (error) {
-        console.error("调用API时出错:", error.message);
+        console.error('调用API时出错:', error.message);
 
         if (error.response) {
-            console.error("状态码:", error.response.status);
-            console.error("响应数据:", error.response.data);
+            console.error('状态码:', error.response.status);
+            console.error('响应数据:', error.response.data);
         } else if (error.request) {
-            console.error("请求已发送，但没有收到响应");
+            console.error('请求已发送，但没有收到响应');
         } else {
-            console.error("设置请求时出错:", error.message);
+            console.error('设置请求时出错:', error.message);
         }
 
-        return JSON.stringify(error.response.data);
+        const payload =
+            error.response && error.response.data !== undefined
+                ? error.response.data
+                : { message: error.message || 'unknown error' };
+        return Promise.reject(new Error(typeof payload === 'string' ? payload : JSON.stringify(payload)));
     }
-}
-
+};

@@ -10,7 +10,8 @@
 | `src/extension.js` | **扩展入口**：`activate` / `deactivate`，注册命令并在激活后注册划词 Hover。 |
 | `src/hoverTranslation.js` | 划词翻译逻辑：根据选中文本长度选择有道单词建议或豆包长句翻译。 |
 | `src/services/youdaoWord.js` | 有道词典「单词/短语」建议接口。 |
-| `src/services/doubao.js` | 豆包（火山方舟）Chat Completions 调用，读取用户配置中的 API Key。 |
+| `src/services/doubao.js` | 豆包（火山方舟）Chat Completions；模型与 Key 来自 `src/config.js` 解析结果。 |
+| `src/config.js` | 解析 `translationtoolbox.doubaoApiKey` / 旧键，以及模型 ID。 |
 | `test/index.js` | 测试运行器（导出 `run()`，供 VS Code 测试宿主加载）。 |
 | `test/extension.test.js` | 示例单元测试。 |
 | `test/runTest.js` | CLI 用：`npm test` 时通过 `@vscode/test-electron` 拉起 VS Code 并执行测试。 |
@@ -26,28 +27,30 @@
 1. 在侧栏打开 **运行和调试**（`Ctrl+Shift+D` / macOS：`Cmd+Shift+D`）。
 2. 在顶部配置下拉框中选择 **Launch Extension**，按 **F5**（或点击绿色运行按钮）。
 3. 会打开一个新的「扩展开发宿主」窗口，其中已加载本扩展。
-4. **激活扩展**：本扩展的激活事件为 `onCommand:translationtoolbox.translate`，需至少执行一次该命令后，划词 Hover 等逻辑才会注册。  
-   - 在宿主窗口中按 `Ctrl+Alt+T`（macOS：`Cmd+Alt+T`，且焦点在编辑器内），或  
-   - 命令面板（`Ctrl+Shift+P` / `Cmd+Shift+P`）搜索并执行 **`translate`**（命令 ID：`translationtoolbox.translate`）。
-5. 在编辑器中选中文本并悬停，应出现翻译 Hover（短文本走有道，较长文本走豆包；豆包需在设置中配置 API Key，见下文）。
+4. **激活扩展**：本扩展使用 **`onStartupFinished`**，窗口启动完成后即激活并注册划词 Hover，**无需**先执行命令。可选：按 `Ctrl+Alt+T`（macOS：`Cmd+Alt+T`）或命令面板执行 **`translate`**（`translationtoolbox.translate`）。
+5. 在编辑器中选中文本并悬停：短文本走有道；**较长文本（≥3 个词）走豆包**，须在设置中配置有效 API Key（见下文），否则 Hover 会提示且不请求网关。
 6. 修改 `src/` 下代码后，可在调试工具栏点击 **重启** 重新加载扩展，或在扩展开发宿主窗口中 **重新加载窗口**（`Ctrl+R` / `Cmd+R`）以加载最新代码。
 7. 在 `src/` 中设置断点即可按常规方式单步调试；输出可在 **调试控制台** 查看。
 
 ## 用户设置（豆包 API）
 
-长句翻译使用火山方舟接口，需在设置中填写密钥（与 `package.json` 中 `configuration` 一致）：
+长句翻译使用火山方舟接口，推荐配置项：
 
-- **`DouBaoApiKey`**：豆包 / 方舟 API Key（Bearer Token）。
+- **`translationtoolbox.doubaoApiKey`**：方舟 API Key（Bearer Token）。
+- **`translationtoolbox.doubaoModel`**：模型 ID，须与方舟已开通模型一致。
 
-在 JSON 设置中示例：
+兼容旧版：仍读取 **`translationtoolbox.DouBaoApiKey`** / **`DouBaoApiKey`**（若仍存在）。
+
+JSON 示例：
 
 ```json
 {
-  "DouBaoApiKey": "你的 API Key"
+  "translationtoolbox.doubaoApiKey": "你的 API Key",
+  "translationtoolbox.doubaoModel": "doubao-1.5-pro-32k-250115"
 }
 ```
 
-未正确配置时，豆包请求可能失败；短词仍可有道结果。
+未配置有效 Key（空、`default` 等）时，长句不会请求豆包；短词仍可有道结果。
 
 ## 浏览 VS Code 扩展 API 类型
 
@@ -97,8 +100,8 @@ npx @vscode/vsce package
 
 ## 常见问题
 
-- **划词无反应**：先执行一次 **`translate` 命令**（或快捷键）以激活扩展，再选中文本悬停。
-- **仅短词有翻译、长句失败**：检查 **`DouBaoApiKey`** 与网络；查看调试控制台中的错误输出。
+- **划词无反应**：确认扩展已随窗口启动完成加载（`onStartupFinished`）；检查输出面板中本扩展是否有报错；再试选区与悬停。
+- **仅短词有翻译、长句失败**：检查 **`translationtoolbox.doubaoApiKey`** 是否为有效 Key（非空、非 `default`）；检查网络；查看调试控制台错误。
 - **`npm test` 很慢或下载大文件**：来自 `@vscode/test-electron` 下载测试用 VS Code；可将 `.vscode-test/` 加入个人忽略列表（本仓库 `.gitignore` 已包含）。
 
 ---
