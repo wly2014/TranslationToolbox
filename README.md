@@ -4,9 +4,10 @@
 
 ## Features
 
-短词/短语使用**有道**建议接口，较长文本使用**豆包（火山方舟）**大模型翻译。支持**选中即翻译**（鼠标悬停查看结果）。
+短词/短语使用**有道**建议接口，较长文本使用**豆包（火山方舟）**大模型翻译；**含日文假名的选区仅走豆包**（不走有道）。支持**选中即翻译**（鼠标悬停查看结果）。
 
 - **模型 ID**：在设置 **`translationtoolbox.DouBaoModel`** 中可**手动填写**方舟控制台提供的最新模型 ID。
+- **豆包系统提示词**：在 **`translationtoolbox.DouBaoSystemPrompt`** 中可自定义长句翻译的 system 角色说明（多行）；默认即为内置的多语言译中文提示。
 - **连通性测试**：在设置中打开 **TranslationToolbox**，在 **DouBaoApiKey** 或 **DouBaoModel** 的说明里点击 **「测试 API Key 与模型连通性」**；或在命令面板运行 **TranslationToolbox: 测试豆包连接**。
 
 ## Quick Start
@@ -18,6 +19,10 @@
 ![](./images/Animation.gif)
 
 ## Release Notes
+
+### 0.8.1
+
+> 新增 **`translationtoolbox.DouBaoSystemPrompt`**，可在设置中自定义豆包长句的 system 提示词（默认与此前内置文案一致）。
 
 ### 0.8.0
 

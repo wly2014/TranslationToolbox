@@ -8,7 +8,8 @@
 |------|------|
 | `package.json` | 扩展清单：命令、快捷键、激活事件、`main` 入口、依赖等。 |
 | `src/extension.js` | **扩展入口**：`activate` / `deactivate`，注册命令并在激活后注册划词 Hover。 |
-| `src/hoverTranslation.js` | 划词翻译逻辑：根据选中文本长度选择有道单词建议或豆包长句翻译。 |
+| `src/hoverTranslation.js` | 划词翻译逻辑：日文（含假名）仅豆包；否则短词有道、长句豆包。 |
+| `src/japaneseDetect.js` | 假名检测，用于日文路由。 |
 | `src/services/youdaoWord.js` | 有道词典「单词/短语」建议接口。 |
 | `src/services/arkClient.js` | 火山方舟 Chat Completions HTTP 封装（翻译与连通性测试共用）。 |
 | `src/services/doubao.js` | 豆包翻译：组装 system/user 消息并调用 `arkClient`。 |
@@ -40,13 +41,15 @@
 
 - **`translationtoolbox.DouBaoApiKey`**：方舟 API Key。也可在 `settings.json` **用户级顶层**使用 **`DouBaoApiKey`**（无 `translationtoolbox.` 前缀）。
 - **`translationtoolbox.DouBaoModel`**：模型 ID；也可顶层 **`DouBaoModel`**。
+- **`translationtoolbox.DouBaoSystemPrompt`**：豆包长句的 **system** 提示词（设置 UI 中为多行文本）；留空则使用扩展内置默认。
 
 JSON 示例：
 
 ```json
 {
   "translationtoolbox.DouBaoApiKey": "你的 API Key",
-  "translationtoolbox.DouBaoModel": "doubao-1.5-pro-32k-250115"
+  "translationtoolbox.DouBaoModel": "doubao-1.5-pro-32k-250115",
+  "translationtoolbox.DouBaoSystemPrompt": "你是专业翻译助手……"
 }
 ```
 

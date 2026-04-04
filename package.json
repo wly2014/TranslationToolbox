@@ -3,7 +3,7 @@
 	"displayName": "TranslationToolbox",
 	"description": "划词翻译：有道短词 + 豆包长句；启动即激活",
 	"keywords": ["translation", "youdao", "doubao", "LLM"],
-	"version": "0.8.0",
+	"version": "0.8.1",
 	"publisher": "WLY",
 	"icon": "images/icon.png",
 	"engines": {
@@ -48,6 +48,12 @@
 					"type": "string",
 					"default": "doubao-1.5-pro-32k-250115",
 					"markdownDescription": "豆包/方舟 **模型 ID**（可手动填写控制台中的最新模型 ID，须与已开通模型一致）。默认值为示例模型。\n\n[▶ 测试 API Key 与模型连通性](command:translationtoolbox.testDoubaoConnection)"
+				},
+				"translationtoolbox.DouBaoSystemPrompt": {
+					"type": "string",
+					"default": "你是专业翻译助手，只负责把用户选中的文本译成**简体中文**。\n输出格式：每行使用 `[识别出的源语言名称]: ` 开头，**冒号后面只允许跟该句/该段的简体中文译文**（可含必要标点、数字、代码与未译专有名词）。\n**严禁**：在冒号后输出英文、日文、韩文、法文等任何非中文的自然语言句子；严禁用多种外语重复翻译同一句并多行罗列；严禁把「示范多语种」当作任务。\n若选区只有一句外文，通常只输出一行 `[语言]: 中文译文`；多句时可逐句分行，每行仍须「标签 + 纯中文」。\n不要输出与翻译无关的前言、说明或结尾套话。",
+					"markdownDescription": "豆包长句翻译使用的 **system** 提示词，可完全自定义。留空则使用扩展内置默认（与首次安装时的默认文案一致）。",
+					"editPresentation": "multilineText"
 				}
 			}
 		}

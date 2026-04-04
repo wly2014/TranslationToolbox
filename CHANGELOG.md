@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### Changed
+
+- 选区含日文平假名/片假名（或半角片假名）时，**仅使用豆包翻译**，不再请求有道接口。
+
+## [0.8.1] - 2026-04-04
+
+### Added
+
+- 设置项 **`translationtoolbox.DouBaoSystemPrompt`**：可自定义豆包长句翻译的 system 提示词（多行编辑）；默认与此前内置文案一致。
+
 ## [0.8.0] - 2026-04-04
 
 ### Removed（破坏性变更）

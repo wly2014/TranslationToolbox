@@ -2,9 +2,13 @@ const vscode = require('vscode');
 const youdaoWord = require('./services/youdaoWord');
 const callDoubaoAPI = require('./services/doubao');
 const { getDoubaoApiKeyResolved, isValidDoubaoApiKey } = require('./config');
+const { containsJapaneseScript } = require('./japaneseDetect');
 
 const MSG_LONG_TEXT_NEED_KEY =
-    '**长句翻译（豆包）**\n\n未配置有效的 API Key，已取消请求。请在设置中搜索 `translationtoolbox.DouBaoApiKey`，填入火山方舟的 API Key（勿使用占位符 `default`）。\n\n仍可使用较短选区（少于 3 个词）通过有道建议接口翻译。';
+    '**长句翻译（豆包）**\n\n未配置有效的 API Key，已取消请求。请在设置中搜索 `translationtoolbox.DouBaoApiKey`，填入火山方舟的 API Key（勿使用占位符 `default`）。\n\n仍可使用较短选区（少于 3 个词、且**非日文假名**）通过有道建议接口翻译。';
+
+const MSG_JAPANESE_NEED_KEY =
+    '**日文翻译（豆包）**\n\n检测到日文假名，本扩展对日文**仅使用豆包**，不使用有道。请配置有效的 `translationtoolbox.DouBaoApiKey`（勿使用占位符 `default`）。';
 
 function translatebyYouDao(text) {
     return new Promise(function (resolve, _reject) {
@@ -21,6 +25,12 @@ function translatebyBigModel(text) {
     return callDoubaoAPI(text).then(result => 'Doubao:: ' + result);
 }
 
+function wordCount(selection) {
+    return selection.split(/\s+/).filter(function (w) {
+        return w.length > 0;
+    }).length;
+}
+
 function registerHoverTranslation(context) {
     let preSelection = '';
     let preResult = '';
@@ -32,9 +42,12 @@ function registerHoverTranslation(context) {
             console.log('preSelection:', preSelection);
             if (selection !== '' && selection !== ' ' && selection !== preSelection) {
                 preSelection = selection;
-                let texts = selection.split(/\s+/);
 
-                if (texts.length < 3) {
+                const isJapanese = containsJapaneseScript(selection);
+                const longByWords = wordCount(selection) >= 3;
+                const useDoubao = isJapanese || longByWords;
+
+                if (!useDoubao) {
                     return translatebyYouDao(selection)
                         .then(function (result) {
                             preResult = result;
@@ -52,8 +65,9 @@ function registerHoverTranslation(context) {
 
                 const key = getDoubaoApiKeyResolved();
                 if (!isValidDoubaoApiKey(key)) {
-                    preResult = MSG_LONG_TEXT_NEED_KEY;
-                    return new vscode.Hover({ language: 'markdown', value: MSG_LONG_TEXT_NEED_KEY });
+                    const needMsg = isJapanese ? MSG_JAPANESE_NEED_KEY : MSG_LONG_TEXT_NEED_KEY;
+                    preResult = needMsg;
+                    return new vscode.Hover({ language: 'markdown', value: needMsg });
                 }
 
                 return translatebyBigModel(selection)
