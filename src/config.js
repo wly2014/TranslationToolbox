@@ -1,23 +1,14 @@
 const vscode = require('vscode');
 
 /**
- * Resolve API key: new `translationtoolbox.doubaoApiKey`, then legacy keys.
+ * API Key：`translationtoolbox.DouBaoApiKey`，或顶层 `DouBaoApiKey`。
  * @returns {string}
  */
 function getDoubaoApiKeyResolved() {
     const c = vscode.workspace.getConfiguration('translationtoolbox');
     const root = vscode.workspace.getConfiguration();
 
-    let k = c.get('doubaoApiKey');
-    if (typeof k === 'string' && k.trim().length > 0) {
-        return k.trim();
-    }
-    k = c.get('DouBaoApiKey');
-    if (typeof k === 'string' && k.trim().length > 0) {
-        return k.trim();
-    }
-
-    k = root.get('translationtoolbox.doubaoApiKey');
+    let k = c.get('DouBaoApiKey');
     if (typeof k === 'string' && k.trim().length > 0) {
         return k.trim();
     }
@@ -32,27 +23,32 @@ function getDoubaoApiKeyResolved() {
     return '';
 }
 
+function pickModelString(value) {
+    if (typeof value !== 'string') {
+        return '';
+    }
+    const t = value.trim();
+    return t.length > 0 ? t : '';
+}
+
 /**
+ * 模型 ID：`translationtoolbox.DouBaoModel`，或顶层 `DouBaoModel`。
  * @returns {string}
  */
 function getDoubaoModelResolved() {
     const c = vscode.workspace.getConfiguration('translationtoolbox');
     const root = vscode.workspace.getConfiguration();
 
-    let m = c.get('doubaoModel');
-    if (typeof m === 'string' && m.length > 0) {
+    let m = pickModelString(c.get('DouBaoModel'));
+    if (m) {
         return m;
     }
-    m = c.get('DouBaoModel');
-    if (typeof m === 'string' && m.length > 0) {
+    m = pickModelString(root.get('translationtoolbox.DouBaoModel'));
+    if (m) {
         return m;
     }
-    m = root.get('translationtoolbox.doubaoModel');
-    if (typeof m === 'string' && m.length > 0) {
-        return m;
-    }
-    m = root.get('translationtoolbox.DouBaoModel');
-    if (typeof m === 'string' && m.length > 0) {
+    m = pickModelString(root.get('DouBaoModel'));
+    if (m) {
         return m;
     }
     return 'doubao-1.5-pro-32k-250115';

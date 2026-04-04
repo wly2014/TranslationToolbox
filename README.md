@@ -6,6 +6,9 @@
 
 短词/短语使用**有道**建议接口，较长文本使用**豆包（火山方舟）**大模型翻译。支持**选中即翻译**（鼠标悬停查看结果）。
 
+- **模型 ID**：在设置 **`translationtoolbox.DouBaoModel`** 中可**手动填写**方舟控制台提供的最新模型 ID。
+- **连通性测试**：在设置中打开 **TranslationToolbox**，在 **DouBaoApiKey** 或 **DouBaoModel** 的说明里点击 **「测试 API Key 与模型连通性」**；或在命令面板运行 **TranslationToolbox: 测试豆包连接**。
+
 ## Quick Start
 
 * 安装该扩展（启动即激活，**无需**先按快捷键）
@@ -15,6 +18,10 @@
 ![](./images/Animation.gif)
 
 ## Release Notes
+
+### 0.8.0
+
+> **破坏性变更**：移除 `translationtoolbox.doubaoApiKey` / `translationtoolbox.doubaoModel`。请仅使用 **`translationtoolbox.DouBaoApiKey`** 与 **`translationtoolbox.DouBaoModel`**（或顶层 `DouBaoApiKey`）。若曾填写旧键名，请在 `settings.json` 中改名后删除旧键。
 
 ### 0.1.2
 
@@ -36,9 +43,17 @@
 > TODO: 修复`百度翻译`
 
 
+### 0.7.1
+
+> 连通性测试入口改为**设置项说明中的可点击链接**（不再使用状态栏按钮）。
+
+### 0.7.0
+
+> 支持**自定义豆包模型 ID**；新增**豆包连接测试**命令（0.7.1 起主要入口为设置项说明中的链接）。
+
 ### 0.6.0
 
-> **启动即激活**（`onStartupFinished`）；**长句翻译**须配置有效 `translationtoolbox.doubaoApiKey`（旧键 `DouBaoApiKey` 仍兼容）；**模型 ID** 与设置 `translationtoolbox.doubaoModel` 一致。
+> **启动即激活**（`onStartupFinished`）；**长句翻译**须配置有效 API Key；**模型 ID** 与设置一致（0.8 起仅 `DouBaoApiKey` / `DouBaoModel`）。
 
 ### 0.5.0
 
@@ -56,7 +71,7 @@
 
 ![](./images/model.png)
 
-4. 在 VS Code 设置中搜索 **`translationtoolbox.doubaoApiKey`**（或兼容旧项 **`DouBaoApiKey`**），填入 API Key。
+4. 在 VS Code 设置中搜索 **`translationtoolbox.DouBaoApiKey`**（或顶层 **`DouBaoApiKey`**），填入 API Key。
 
 ![](./images/vscode.png)
 

@@ -10,8 +10,10 @@
 | `src/extension.js` | **扩展入口**：`activate` / `deactivate`，注册命令并在激活后注册划词 Hover。 |
 | `src/hoverTranslation.js` | 划词翻译逻辑：根据选中文本长度选择有道单词建议或豆包长句翻译。 |
 | `src/services/youdaoWord.js` | 有道词典「单词/短语」建议接口。 |
-| `src/services/doubao.js` | 豆包（火山方舟）Chat Completions；模型与 Key 来自 `src/config.js` 解析结果。 |
-| `src/config.js` | 解析 `translationtoolbox.doubaoApiKey` / 旧键，以及模型 ID。 |
+| `src/services/arkClient.js` | 火山方舟 Chat Completions HTTP 封装（翻译与连通性测试共用）。 |
+| `src/services/doubao.js` | 豆包翻译：组装 system/user 消息并调用 `arkClient`。 |
+| `src/doubaoConnectionTest.js` | 连通性测试：最小 `ping` 请求，格式化错误信息。 |
+| `src/config.js` | 解析 `translationtoolbox.DouBaoApiKey` / `DouBaoApiKey`（顶层）及 `DouBaoModel`（trim）。 |
 | `test/index.js` | 测试运行器（导出 `run()`，供 VS Code 测试宿主加载）。 |
 | `test/extension.test.js` | 示例单元测试。 |
 | `test/runTest.js` | CLI 用：`npm test` 时通过 `@vscode/test-electron` 拉起 VS Code 并执行测试。 |
@@ -34,23 +36,30 @@
 
 ## 用户设置（豆包 API）
 
-长句翻译使用火山方舟接口，推荐配置项：
+长句翻译使用火山方舟接口，配置项为：
 
-- **`translationtoolbox.doubaoApiKey`**：方舟 API Key（Bearer Token）。
-- **`translationtoolbox.doubaoModel`**：模型 ID，须与方舟已开通模型一致。
-
-兼容旧版：仍读取 **`translationtoolbox.DouBaoApiKey`** / **`DouBaoApiKey`**（若仍存在）。
+- **`translationtoolbox.DouBaoApiKey`**：方舟 API Key。也可在 `settings.json` **用户级顶层**使用 **`DouBaoApiKey`**（无 `translationtoolbox.` 前缀）。
+- **`translationtoolbox.DouBaoModel`**：模型 ID；也可顶层 **`DouBaoModel`**。
 
 JSON 示例：
 
 ```json
 {
-  "translationtoolbox.doubaoApiKey": "你的 API Key",
-  "translationtoolbox.doubaoModel": "doubao-1.5-pro-32k-250115"
+  "translationtoolbox.DouBaoApiKey": "你的 API Key",
+  "translationtoolbox.DouBaoModel": "doubao-1.5-pro-32k-250115"
 }
 ```
 
 未配置有效 Key（空、`default` 等）时，长句不会请求豆包；短词仍可有道结果。
+
+## 测试豆包连接（API Key 与模型）
+
+配置好 Key 与模型 ID 后，建议先验证连通性：
+
+1. **设置 UI**：打开设置并搜索 **TranslationToolbox**，在 **DouBaoApiKey** 或 **DouBaoModel** 下方的说明中，点击 **「测试 API Key 与模型连通性」**（通过 `command:` 链接触发，与划词使用相同配置）。  
+2. **命令面板**（`Ctrl+Shift+P` / `Cmd+Shift+P`）→ **TranslationToolbox: 测试豆包连接（API Key 与模型）**。
+
+成功会弹出简要说明；失败会提示 HTTP 状态、方舟返回的错误信息或网络问题，便于排查 Key、模型 ID 与开通状态。
 
 ## 浏览 VS Code 扩展 API 类型
 
@@ -101,7 +110,7 @@ npx @vscode/vsce package
 ## 常见问题
 
 - **划词无反应**：确认扩展已随窗口启动完成加载（`onStartupFinished`）；检查输出面板中本扩展是否有报错；再试选区与悬停。
-- **仅短词有翻译、长句失败**：检查 **`translationtoolbox.doubaoApiKey`** 是否为有效 Key（非空、非 `default`）；检查网络；查看调试控制台错误。
+- **仅短词有翻译、长句失败**：检查 **`translationtoolbox.DouBaoApiKey`**（或顶层 **`DouBaoApiKey`**）是否为有效 Key（非空、非 `default`）；检查网络；查看调试控制台错误。
 - **`npm test` 很慢或下载大文件**：来自 `@vscode/test-electron` 下载测试用 VS Code；可将 `.vscode-test/` 加入个人忽略列表（本仓库 `.gitignore` 已包含）。
 
 ---

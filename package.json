@@ -3,7 +3,7 @@
 	"displayName": "TranslationToolbox",
 	"description": "划词翻译：有道短词 + 豆包长句；启动即激活",
 	"keywords": ["translation", "youdao", "doubao", "LLM"],
-	"version": "0.6.0",
+	"version": "0.8.0",
 	"publisher": "WLY",
 	"icon": "images/icon.png",
 	"engines": {
@@ -29,36 +29,25 @@
 			{
 				"command": "translationtoolbox.translate",
 				"title": "translate"
+			},
+			{
+				"command": "translationtoolbox.testDoubaoConnection",
+				"title": "TranslationToolbox: 测试豆包连接（API Key 与模型）",
+				"category": "TranslationToolbox"
 			}
 		],
 		"configuration": {
 			"title": "translationtoolbox",
 			"properties": {
-				"translationtoolbox.doubaoApiKey": {
-					"type": "string",
-					"default": "",
-					"markdownDescription": "火山方舟 API Key（长句翻译必填）。若曾使用旧项 `DouBaoApiKey`，仍会自动读取。"
-				},
-				"translationtoolbox.doubaoModel": {
-					"type": "string",
-					"description": "豆包模型 ID（须与方舟已开通模型一致）",
-					"enum": [
-						"doubao-1.5-pro-32k-250115"
-					],
-					"default": "doubao-1.5-pro-32k-250115"
-				},
 				"translationtoolbox.DouBaoApiKey": {
 					"type": "string",
 					"default": "",
-					"description": "（兼容旧版）豆包 API Key，优先使用 translationtoolbox.doubaoApiKey。"
+					"markdownDescription": "火山方舟 **API Key**（长句翻译必填）。"
 				},
 				"translationtoolbox.DouBaoModel": {
 					"type": "string",
-					"description": "（兼容旧版）模型 ID，优先使用 translationtoolbox.doubaoModel。",
-					"enum": [
-						"doubao-1.5-pro-32k-250115"
-					],
-					"default": "doubao-1.5-pro-32k-250115"
+					"default": "doubao-1.5-pro-32k-250115",
+					"markdownDescription": "豆包/方舟 **模型 ID**（可手动填写控制台中的最新模型 ID，须与已开通模型一致）。默认值为示例模型。\n\n[▶ 测试 API Key 与模型连通性](command:translationtoolbox.testDoubaoConnection)"
 				}
 			}
 		}

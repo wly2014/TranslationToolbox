@@ -4,7 +4,7 @@ const callDoubaoAPI = require('./services/doubao');
 const { getDoubaoApiKeyResolved, isValidDoubaoApiKey } = require('./config');
 
 const MSG_LONG_TEXT_NEED_KEY =
-    '**长句翻译（豆包）**\n\n未配置有效的 API Key，已取消请求。请在设置中搜索 `translationtoolbox.doubaoApiKey`，填入火山方舟的 API Key（勿使用占位符 `default`）。\n\n仍可使用较短选区（少于 3 个词）通过有道建议接口翻译。';
+    '**长句翻译（豆包）**\n\n未配置有效的 API Key，已取消请求。请在设置中搜索 `translationtoolbox.DouBaoApiKey`，填入火山方舟的 API Key（勿使用占位符 `default`）。\n\n仍可使用较短选区（少于 3 个词）通过有道建议接口翻译。';
 
 function translatebyYouDao(text) {
     return new Promise(function (resolve, _reject) {

@@ -4,8 +4,8 @@
 // Desc: 豆包大模型翻译接口
 ////////////////////////////////////////////////////////////////////////
 
-const axios = require('axios');
 const { getDoubaoApiKeyResolved, getDoubaoModelResolved, isValidDoubaoApiKey } = require('../config');
+const { arkChatCompletions } = require('./arkClient');
 
 module.exports = async function callDoubaoAPI(word) {
     const apiKey = getDoubaoApiKeyResolved();
@@ -14,31 +14,25 @@ module.exports = async function callDoubaoAPI(word) {
     }
 
     const model = getDoubaoModelResolved();
-    const apiUrl = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+    if (!model || !String(model).trim()) {
+        return Promise.reject(new Error('INVALID_DOUBAO_MODEL'));
+    }
 
     try {
-        const response = await axios.post(
-            apiUrl,
-            {
-                model: model,
-                messages: [
-                    {
-                        role: 'system',
-                        content: '你是专业翻译助手，精准转换中英内容.'
-                    },
-                    {
-                        role: 'user',
-                        content: word
-                    }
-                ]
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${apiKey}`
+        const response = await arkChatCompletions({
+            apiKey,
+            model: String(model).trim(),
+            messages: [
+                {
+                    role: 'system',
+                    content: '你是专业翻译助手，精准转换中英内容.'
+                },
+                {
+                    role: 'user',
+                    content: word
                 }
-            }
-        );
+            ]
+        });
 
         console.log('API响应:', response.data);
         return response.data['choices'][0]['message']['content'];
