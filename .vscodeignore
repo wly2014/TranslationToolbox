@@ -1,5 +1,8 @@
 .vscode/**
 .vscode-test/**
+.cursor/**
+plans/**
+readmeforcode.md
 test/**
 .gitignore
 jsconfig.json

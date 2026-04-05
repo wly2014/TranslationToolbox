@@ -18,50 +18,7 @@
 
 
 
-## Release Notes
-
-### 0.8.1
-
-> 新增 `**translationtoolbox.DouBaoSystemPrompt`**，可在设置中自定义豆包长句的 system 提示词（默认与此前内置文案一致）。
-
-### 0.8.0
-
-> **破坏性变更**：移除 `translationtoolbox.doubaoApiKey` / `translationtoolbox.doubaoModel`。请仅使用 `**translationtoolbox.DouBaoApiKey`** 与 `**translationtoolbox.DouBaoModel**`（或顶层 `DouBaoApiKey`）。若曾填写旧键名，请在 `settings.json` 中改名后删除旧键。
-
-### 0.1.2
-
-> 整合了**百度，Google，Bing，及有道**翻译的相关API
-> 支持**选中即可翻译**
-
-### 0.2.0
-
-> 更新修复了有道翻译的相关API
-
-### 0.3.0
-
-> 更新修复了**百度翻译**的相关API
-
-### 0.4.1
-
-> 更新修复了**有道翻译**的相关API
-
-> TODO: 修复`百度翻译`
-
-### 0.7.1
-
-> 连通性测试入口改为**设置项说明中的可点击链接**（不再使用状态栏按钮）。
-
-### 0.7.0
-
-> 支持**自定义豆包模型 ID**；新增**豆包连接测试**命令（0.7.1 起主要入口为设置项说明中的链接）。
-
-### 0.6.0
-
-> **启动即激活**（`onStartupFinished`）；**长句翻译**须配置有效 API Key；**模型 ID** 与设置一致（0.8 起仅 `DouBaoApiKey` / `DouBaoModel`）。
-
-### 0.5.0
-
-> 删除了有道翻译的部分API，增加了对**豆包大模型**翻译的支持。
+## DouBao
 
 启用豆包大模型需要注册个人账号以获取免费的大模型API，具体配置步骤如下：
 
@@ -71,12 +28,11 @@
 ![](./images/apikey.png)
 
 
-1. 在火山方舟「开通管理」中激活模型,可以选择比较便宜的模型,比如`Doubao-1.5-pro-32k`
+3. 在火山方舟「开通管理」中激活模型,可以选择比较便宜的模型,比如`Doubao-1.5-pro-32k`
 ![](./images/model.png)
 
 
-
-1. 在 VS Code 设置中搜索 `**translationtoolbox.DouBaoApiKey`**（或顶层 `**DouBaoApiKey**`），填入 API Key 和开通模型,并点击按钮进行连通性测试。
+4. 在 VS Code 设置中搜索 `**translationtoolbox.DouBaoApiKey`**（或顶层 `**DouBaoApiKey**`），填入 API Key 和开通模型,并点击按钮进行连通性测试。
 ![](./images/vscode.png)
 
 
