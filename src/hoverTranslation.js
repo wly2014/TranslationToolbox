@@ -10,9 +10,6 @@ const MSG_LONG_TEXT_NEED_KEY =
 const MSG_JAPANESE_NEED_KEY =
     '**日文翻译（豆包）**\n\n检测到日文假名，本扩展对日文**仅使用豆包**，不使用有道。请配置有效的 `translationtoolbox.DouBaoApiKey`（勿使用占位符 `default`）。';
 
-const MSG_WAITING_TRANSLATION =
-    '**翻译中…**\n正在请求翻译结果，请稍候。';
-
 function translatebyYouDao(text) {
     return new Promise(function (resolve, _reject) {
         console.log('::translatebyYouDao::');
@@ -35,14 +32,12 @@ function wordCount(selection) {
 }
 
 function registerHoverTranslation(context) {
-    /** 当前选中的文本（用于判断选区是否变化） */
     let preSelection = '';
-    /** 正在等待接口返回的选区文本；与 preSelection 相同时表示「加载中」 */
     let pendingRequestSelection = null;
-    /** 最近一次已成功对应到 preSelection 的选区文本 */
     let lastResolvedSelection = '';
-    /** 与 lastResolvedSelection 对应的展示内容 */
     let lastResolvedResult = '';
+    /** 当前选区正在进行的 Hover Promise；同选区再次触发时返回同一引用，由 VS Code 在 resolve 前显示加载、resolve 后显示译文 */
+    let inFlightHoverPromise = null;
 
     const disposable = vscode.languages.registerHoverProvider('*', {
         provideHover(document, position, _token) {
@@ -54,7 +49,22 @@ function registerHoverTranslation(context) {
                 return undefined;
             }
 
-            // 选区变化：发起新请求
+            // 选区未变且仍有进行中的请求：返回同一 Promise → 编辑器持续 loading，直至 resolve 后展示译文
+            if (selection === preSelection && inFlightHoverPromise && pendingRequestSelection === selection) {
+                return inFlightHoverPromise;
+            }
+
+            // 选区未变且已有结果：展示缓存（保留原「悬停词须在选区内」的判断）
+            if (selection === preSelection && lastResolvedSelection === selection) {
+                const wordRange = document.getWordRangeAtPosition(position);
+                const cHover = wordRange ? document.getText(wordRange) : '';
+                if (!cHover || selection.indexOf(cHover) === -1) {
+                    return undefined;
+                }
+                return new vscode.Hover({ language: 'markdown', value: lastResolvedResult });
+            }
+
+            // 选区变化：发起新请求，只返回一个 Promise，resolve 后再给出 Hover
             if (selection !== preSelection) {
                 preSelection = selection;
                 const reqSel = selection;
@@ -65,12 +75,13 @@ function registerHoverTranslation(context) {
                 const useDoubao = isJapanese || longByWords;
 
                 if (!useDoubao) {
-                    return translatebyYouDao(selection)
+                    const hoverPromise = translatebyYouDao(selection)
                         .then(function (result) {
                             if (reqSel !== preSelection) {
                                 return undefined;
                             }
                             pendingRequestSelection = null;
+                            inFlightHoverPromise = null;
                             lastResolvedSelection = reqSel;
                             lastResolvedResult = result;
                             return new vscode.Hover({ language: 'markdown', value: result });
@@ -81,6 +92,7 @@ function registerHoverTranslation(context) {
                                 return undefined;
                             }
                             pendingRequestSelection = null;
+                            inFlightHoverPromise = null;
                             const msg = String(err && err.message ? err.message : err);
                             const errHover = '**有道翻译失败**\n\n' + msg;
                             lastResolvedSelection = reqSel;
@@ -90,23 +102,27 @@ function registerHoverTranslation(context) {
                                 value: errHover
                             });
                         });
+                    inFlightHoverPromise = hoverPromise;
+                    return hoverPromise;
                 }
 
                 const key = getDoubaoApiKeyResolved();
                 if (!isValidDoubaoApiKey(key)) {
                     pendingRequestSelection = null;
+                    inFlightHoverPromise = null;
                     const needMsg = isJapanese ? MSG_JAPANESE_NEED_KEY : MSG_LONG_TEXT_NEED_KEY;
                     lastResolvedSelection = selection;
                     lastResolvedResult = needMsg;
                     return new vscode.Hover({ language: 'markdown', value: needMsg });
                 }
 
-                return translatebyBigModel(selection)
+                const hoverPromise = translatebyBigModel(selection)
                     .then(function (result) {
                         if (reqSel !== preSelection) {
                             return undefined;
                         }
                         pendingRequestSelection = null;
+                        inFlightHoverPromise = null;
                         lastResolvedSelection = reqSel;
                         lastResolvedResult = result;
                         return new vscode.Hover({ language: 'markdown', value: result });
@@ -117,6 +133,7 @@ function registerHoverTranslation(context) {
                             return undefined;
                         }
                         pendingRequestSelection = null;
+                        inFlightHoverPromise = null;
                         const msg = String(err && err.message ? err.message : err);
                         const errHover = '**豆包翻译失败**\n\n' + msg;
                         lastResolvedSelection = reqSel;
@@ -126,22 +143,10 @@ function registerHoverTranslation(context) {
                             value: errHover
                         });
                     });
+                inFlightHoverPromise = hoverPromise;
+                return hoverPromise;
             }
 
-            // 选区未变：可能是鼠标移动触发的再次 hover，不得展示「上一段选区」的译文
-            console.log('鼠标发生了移动（同选区）');
-            const wordRange = document.getWordRangeAtPosition(position);
-            const cHover = wordRange ? document.getText(wordRange) : '';
-            if (!cHover || selection.indexOf(cHover) === -1) {
-                return undefined;
-            }
-
-            if (pendingRequestSelection === selection) {
-                return new vscode.Hover({ language: 'markdown', value: MSG_WAITING_TRANSLATION });
-            }
-            if (lastResolvedSelection === selection) {
-                return new vscode.Hover({ language: 'markdown', value: lastResolvedResult });
-            }
             return undefined;
         }
     });
